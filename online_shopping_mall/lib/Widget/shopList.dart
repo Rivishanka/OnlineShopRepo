@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:online_shopping_mall/Controller/shopService.dart';
 import 'package:online_shopping_mall/Model/shop.dart';
+import 'package:online_shopping_mall/Widget/map.dart';
 
 class ShopList extends StatefulWidget {
   ShopList({Key key}) : super(key: key);
@@ -21,7 +22,7 @@ class _ShopListState extends State<ShopList> {
     super.initState();
   }
 
-  void getMalls(String shopName) async{
+  void getMalls(String shopName) async{ //search malls
     if(shopName == "ALL"){
       setState(() {
         shopList = null;
@@ -92,7 +93,7 @@ class _ShopListState extends State<ShopList> {
 
   Widget buildList(BuildContext context, List<DocumentSnapshot> snapshot){
     return ListView(
-      children: snapshot.map((data) => buildListItem(context, data)).toList(),
+      children: snapshot.map((data) => buildListItem(context, data)).toList(), //map snapshot items
     );
   }
 
@@ -124,10 +125,10 @@ class _ShopListState extends State<ShopList> {
           color: Colors.grey[300],
         ),
         onTap: (){
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => MallLocatorMap(title: 'Malls Edit Console', latitude: mall.latitude, longitude: mall.longitude, locationName: mall.name)),
-          // );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MallLocatorMap(title: 'Malls Edit Console', latitude: mall.latitude, longitude: mall.longitude, locationName: mall.name)),
+          );
         },
       ),
     );
@@ -157,25 +158,12 @@ class _ShopListState extends State<ShopList> {
                 children: <Widget>[
                   Icon(Icons.location_on, size: 12.0,),
                   Text(
-                    "  Tap to view location on Polestar Map",
+                    "  Tap to view location on Map",
                     style: TextStyle(
                         fontSize: 12.0,
                         color: Colors.green[600]
                     ),
                   ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Icon(Icons.edit, size: 12.0,),
-                  Text(
-                    "  Tap and hold to manage mall",
-                    style: TextStyle(
-                        fontSize: 12.0,
-                        color: Colors.orange[600]
-                    ),
-                  )
                 ],
               ),
               Flexible(

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
 
 //Resuable map screen to view the location selected by admin or user
 //APIs => Maps API and Places API from Google
@@ -17,7 +18,6 @@ class MallLocatorMap extends StatefulWidget {
 
 class _MallLocatorMapState extends State<MallLocatorMap> {
   Completer<GoogleMapController> _googleMapController = Completer();
-  //GoogleMapController _googleMapController;
   static LatLng _center;
   Set<Marker> _markers = {};
   String _title;
@@ -25,8 +25,9 @@ class _MallLocatorMapState extends State<MallLocatorMap> {
   double _latitude;
   String _locationName;
   static String kGoogleApiKey = "AIzaSyBMNXK98PInVNh3qXKOu4SRTaxoy3SBBdw";
-  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
+  GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey); //api package for flutter
   String _placeId;
+  List<PlacesSearchResult> places = [];
 
 
   @override
@@ -41,22 +42,18 @@ class _MallLocatorMapState extends State<MallLocatorMap> {
 
   void _onMapCreated(GoogleMapController controller) {
     _googleMapController.complete(controller);
-    //_googleMapController = controller;
   }
-
-  void navigate(double latitude, double longitude) async{
-    final mapUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
-    if (await canLaunch(mapUrl)){
-      await launch(mapUrl);
-    } else {
-      throw 'Could not load';
-    }
-  }
+  //open google map using mobile app
+  // void navigate(double latitude, double longitude) async{
+  //   final mapUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+  //   if (await canLaunch(mapUrl)){
+  //     await launch(mapUrl);
+  //   } else {
+  //     throw 'Could not load';
+  //   }
+  // }
 
   void refresh(){
-    //final center = await getUserLocation();
-
-    //_googleMapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target: _center, zoom: 15.0)));
     getNearbyMalls();
   }
 
@@ -90,7 +87,7 @@ class _MallLocatorMapState extends State<MallLocatorMap> {
       }
     });
   }
-
+  //to show location image
   Widget locationPhoto(BuildContext context, String reference) {
     String photoUrl = _places.buildPhotoUrl(photoReference: reference);
     return Image.network(
@@ -134,46 +131,11 @@ class _MallLocatorMapState extends State<MallLocatorMap> {
         ));
   }
 
-  _showDetailsSheet(BuildContext context) async{
-    Position position = Position(latitude:_center.latitude, longitude: _center.longitude);
-    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(_center.latitude, _center.longitude);
-    showModalBottomSheet(
-        context: context,
-        builder: (context) => Container(
-          height: 300,
-          color: Colors.white,
-          child: new Column(
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.my_location),
-                title: Text("Shopping Mall: " + _locationName),
-              ),
-              ListTile(
-                leading: Icon(Icons.place),
-                title: Text("Address: " + placemark[0].thoroughfare),
-              ),
-              ListTile(
-                leading: Icon(Icons.landscape),
-                title: Text(placemark[0].subLocality),
-              ),
-              ListTile(
-                leading: Icon(Icons.crop_landscape),
-                title: Text(placemark[0].administrativeArea),
-              ),
-              ListTile(
-                leading: Icon(Icons.local_post_office),
-                title: Text(placemark[0].postalCode),
-              ),
-            ] ,
-          ),
-        ));
-  }
-
   @override
   Widget build(BuildContext context) {
     setState(() {
       _markers.add(
-          Marker(
+          Marker( //place initial marker
               markerId: MarkerId(_locationName),
               position: _center,
               icon: BitmapDescriptor.defaultMarker,

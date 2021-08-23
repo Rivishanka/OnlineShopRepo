@@ -17,27 +17,7 @@ class Shop {
         longitude = map["longitude"],
         latitude = map["latitude"];
 
-
-  Map<String, dynamic> toMap(){
-    return {
-      'name': name,
-      'description': description,
-      'longitude': longitude,
-      'latitude': latitude
-    };
-
-  }
-
   Shop.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
-  toJson(){
-    return {
-      //'id': id,
-      'name': name,
-      'description': description,
-      'longitude': longitude,
-      'latitude': latitude
-    };
-  }
 }
